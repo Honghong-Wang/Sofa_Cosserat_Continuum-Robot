@@ -102,12 +102,7 @@ def createScene(rootNode):
                  inertialParams=inertialParams, name="cosserat", radius=Rb, youngModulus=YM))
 
     cosseratNode = nonLinearCosserat.legendreControlPointsNode
-    cosseratNode.addObject('MechanicalMatrixMapper', template='Vec3,Vec3',
-                           object1=cosseratNode.getLinkPath(),
-                           object2=cosseratNode.getLinkPath(),
-                           name='cosseratCoordinateNodeMapper',
-                           nodeToParse=nonLinearCosserat.cosseratCoordinateNode.getLinkPath())
-
+  
     beamFrame = nonLinearCosserat.cosseratFrame
 
     constForce = beamFrame.addObject('ConstantForceField', name='constForce', showArrowSize=0.02,
@@ -116,15 +111,5 @@ def createScene(rootNode):
     nonLinearCosserat = solverNode.addObject(
         ForceController(parent=solverNode, cosseratFrames=beamFrame.FramesMO, forceNode=constForce))
 
-    # # solverNode2 = rootNode.addChild('solverNode2')
-    # # solverNode2.addObject('EulerImplicitSolver', rayleighStiffness="0.2", rayleighMass='0.1')
-    # # solverNode2.addObject('SparseLDLSolver', name='solver', template="CompressedRowSparseMatrixd")
-    # # solverNode2.addObject('GenericConstraintCorrection')
-    # # cosserat2 = solverNode2.addChild(Cosserat(parent=solverNode2, cosseratGeometry=linearConfig,
-    # #                                           useCollisionModel=needCollisionModel, name="cosserat2", radius=0.1))
-    #
-    # beamFrame2 = cosserat2.cosseratFrame
-    # beamFrame2.addObject('ConstantForceField', name='constForce', showArrowSize=0, indices=12,
-    #                      force=[0., 0., 0., 0., 450., 0.])
-
+    
     return rootNode
