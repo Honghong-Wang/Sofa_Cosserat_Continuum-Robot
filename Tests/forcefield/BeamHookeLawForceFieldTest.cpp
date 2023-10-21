@@ -2,7 +2,7 @@
 // Created by younes on 07/06/2021.
 //
 
-#include <CosseratPlugin/config.h>
+#include <Cosserat/config.h>
 
 #include <gtest/gtest.h>
 #include <sofa/testing/BaseTest.h>
@@ -18,7 +18,7 @@
 #include <sofa/core/behavior/ForceField.inl>
 #include <sofa/helper/system/PluginManager.h>
 
-#include <CosseratPlugin/forcefield/BeamHookeLawForceField.inl>
+#include <Cosserat/forcefield/BeamHookeLawForceField.inl>
 #include <sofa/testing/NumericTest.h>
 
 using sofa::testing::BaseTest ;
@@ -45,11 +45,7 @@ struct BeamHookeLawForceFieldTest : public testing::NumericTest<> {
         // initialization or some code to run before each test
         fprintf(stderr, "Starting up ! \n");
         sofa::simpleapi::importPlugin("Sofa.Component");
-        sofa::simpleapi::importPlugin("CosseratPlugin");
-
-        //create the context for
-        if(simulation==nullptr)
-            sofa::simulation::setSimulation(simulation = new sofa::simulation::graph::DAGSimulation());
+        sofa::simpleapi::importPlugin("Cosserat");
     }
 
     // Tears down the test fixture.
@@ -58,7 +54,7 @@ struct BeamHookeLawForceFieldTest : public testing::NumericTest<> {
         // can be used instead of a destructor,
         // but exceptions can be handled in this function only
         if(root) {
-            simulation->unload(root);
+            sofa::simulation::node::unload(root);
         }
         fprintf(stderr, "Starting down ! \n");
     }
@@ -105,8 +101,6 @@ struct BeamHookeLawForceFieldTest : public testing::NumericTest<> {
 protected:
     ///< Root of the scene graph, created by the constructor an re-used in the tests
     simulation::Node::SPtr root;
-    ///< created by the constructor an re-used in the tests
-    simulation::Simulation* simulation {nullptr};
 
     void testFonctionnel();
 };
@@ -131,10 +125,9 @@ void BeamHookeLawForceFieldTest<defaulttype::Vec3Types>::testFonctionnel() {
     EXPECT_NE(root.get(), nullptr) ;
     root->init(sofa::core::execparams::defaultInstance()) ;
 
-    Simulation* simulation = sofa::simulation::getSimulation() ;
     auto total_load = dynamic_cast<sofa::core::objectmodel::Data<double> *>(traction->findData("lengthY"));
     for (unsigned int step = 1; step <= 5; ++step) {
-        simulation->animate(root.get(), 1);
+        sofa::simulation::node::animate(root.get(), 1);
         EXPECT_DOUBLE_EQ(total_load->getValue(), 4*step) << "Total load at time step " << step << " is incorrect.";
     }
 }
@@ -176,10 +169,8 @@ void BeamHookeLawForceFieldTest<defaulttype::Vec3Types>::basicAttributesTest(){
         << "Missing attribute with name '"
         << attrname << "'." ;
 
-    Simulation* simulation = sofa::simulation::getSimulation() ;
-    ASSERT_NE(nullptr, simulation) ;
     for(int i=0; i<10; i++){
-        simulation->animate(root.get(),(double)0.01);
+        sofa::simulation::node::animate(root.get(),(double)0.01);
     }
 }
 
